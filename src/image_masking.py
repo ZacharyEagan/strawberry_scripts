@@ -2,12 +2,11 @@ import sys
 import cv2
 import numpy as np
 
-
-
 import PIL
 from GPSPhoto import gpsphoto
 import struct
 import time
+
 
 class filter:
    def __init__(self, name):
@@ -86,7 +85,11 @@ class filter:
       photo.modGPSData(info, "masked/"+self.name+"_masked.jpg")
       
       
-      
+"""
+   usage: move script into working image directory, make sub-directory called "mask" and "masked".
+      ls *.jpg | python image_masking.py
+      then use the sliders on the "image" window to filter the first image. when satisfied press 's' then press 'q'. program will use the same settings to mask all images in the directory. masked versions of the image (with gps data still attatched if available in the origional) will be placed in masked/ the mask images will be placed into mask. use these with agisoft.      
+"""
               
 if __name__=='__main__':
    f = filter("exif_bag_2020-06-29-15-08-53_0401.jpg")  
