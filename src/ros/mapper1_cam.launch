@@ -55,7 +55,7 @@
 <!-- Setup camera positions (visualize this using rosrun tf view_frames -->
    <node pkg="tf" type="static_transform_publisher" name="base_to_camera1_tf"
       args="0.009  0.021 0.027 0.000 -0.018 0.005 /base_link /$(arg camera1)_link 100" />
-   
+ 
    <node pkg="tf" type="static_transform_publisher" name="base_to_t265_tf"
       args="0.0 0.0 0.0 0.0 0.0 0.0 /$(arg camera3)_link /base_link 100" />
 
@@ -103,11 +103,13 @@
       <param name="rgbd_cameras"       type="int"    value="1"/>
       <remap from="rgbd_image"       to="/camera1/rgbd_image"/>
       <remap from="odom"       to="/t265/odom/sample"/>
+      <!--remap from="odom"       to="/rtabmap/odom"/-->
       <remap from="gps/fix"       to="/fix"/>
 
       <param name="Grid/FromDepth"     type="string" value="false"/>
       <param name="Vis/EstimationType" type="string" value="0"/> <!-- should be 0 for multi-cameras -->
       <param name="Vis/CorGuessWinSize"       type="string" value="0"/> <!-- should be 0 for multi-cameras -->
+      <remap from="user_data_async" to="/wifi_signal"/>
     </node>
    
    <!-- RTABMAP with GUI. note this requires the above rtabmap instance to save clouds to database-->    
