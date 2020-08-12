@@ -1,0 +1,57 @@
+Realsense Camera 435 #1 id = 819312072040
+Realsense Camera 435 #2 id = 014122072620
+
+#To start the realsense camera for use as a ros depth topic with color
+#note the color image can be used with higher resolution but may increase latency
+roslaunch realsense2_camera rs_camera.launch align_depth:=true
+
+#note: the expanded color setting may require a hardware reset.
+roslaunch realsense2_camera rs_camera.launch align_depth:=true color_width:=1280 color_height:=720
+
+roslaunch realsense2_camera rs_d400_and_t265.launch initial_reset:=true align_depth:=true
+
+
+
+#to start the GPS node use "Bluetooth Manager" a standalone program on ubuntu that's excelent for connecting bluetooth as a serial port.
+Connect to the emlid reach or phone.
+
+#Then to connect the bluetooth serial port to the ros network use: 
+sudo chmod 666 /dev/rfcomm1
+rosrun nmea_navsat_driver nmea_serial_driver _port:=/dev/rfcomm1
+
+
+
+#To start the mapping software use 
+
+roslaunch rtabmap_ros rtabmap.launch rtabmap_args:="--delete_db_on_start"   gps_topic:=/fix  depth_topic:=/camera/aligned_depth_to_color/image_raw rgb_topic:=/camera/color/image_raw  camera_info_topic:=/camera/color/camera_info approx_sync:=false
+ 
+roslaunch rtabmap_ros rtabmap.launch rtabmap_args:="--delete_db_on_start" depth_topic:=/d400/aligned_depth_to_color/image_raw rgb_topic:=/d400/color/image_raw camera_info_topic:=/d400/color/camera_info approx_sync:=true frame_id:=t265_odom_frame odom_topic:=/t265/odom/sample
+
+visual_odometry:=false
+
+
+#^ still need to find the option to restrict the search radius for loop closure to 10-20 meters. 
+#there should also be a topic for monument style artifacts which may improve loop closures.
+
+
+#to view GPS points save the map as a database and recal it using 
+rtabmap-databaseViewer rtabmap.db
+
+#to save relevent raw data for non-rtabmap reconstruction
+rosbag record /camera/color/image_raw /camera/color/camera_info /camera/color/image_raw/image_topics /fix /camera/aligned_depth_to_color/image_raw /camera/aligned_depth_to_color/camera_info /camera/extrinsics/depth_to_color /camera/rgb_camera/auto_exposure_roi/parameter_descriptions /imu/data /rtabmap/odom
+
+#to extract frames from a video file:
+ffmpeg -i VID_20200528_145244291.mp4 -r 10  img/image-%3d.jpeg
+
+
+#to set physical location relationships between cameras and world frame
+rosrun tf static_transform_publisher 0 0 0 0 0 0 1 map my_frame 10
+rosrun tf static_transform_publisher 0 0 0 0 0 0  camera_odom_frame map 10
+
+
+#to run the gps sensor fusion library (work in progress)
+rosrun robot_localization navsat_transform_node g /odometry/filtered:=/camera/odom/sample /imu/data:=/camera/imu /gps/fix:=/fix
+
+
+
+rosbag record --split --size=8192jack@jack:/media/jack/Feild_Scans$ rosbag record --split --size=8192 --buffsize=2048 camera/color/image_raw /camera/color/camera_info /camera/color/image_raw/image_topics /fix /camera/aligned_depth_to_color/image_raw /camera/aligned_depth_to_color/camera_info /camera/extrinsics/depth_to_color /camera/rgb_camera/auto_exposure_roi/parameter_descriptions /imu/data /rtabmap/odom
