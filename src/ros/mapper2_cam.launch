@@ -14,7 +14,7 @@
     <arg name="device_type_camera2"    		default="d4.5"/>	<!-- Note: using regular expression. match D435, D435i, D415... -->
     <arg name="device_type_camera3"    		default="t265"/>	<!-- Note: using regular expression. match D435, D435i, D415... -->
     <arg name="serial_no_camera1"    			default="819312072040"/>
-    <arg name="serial_no_camera2"    			default="014122072620"/>
+    <arg name="serial_no_camera2"    			default="017322073371"/>
     <arg name="serial_no_camera3"    			default="948422110996"/>
     <arg name="camera1"              			default="camera1"/>		<!-- Note: Replace with camera name -->
     <arg name="camera2"              			default="camera2"/>		<!-- Note: Replace with camera name -->
