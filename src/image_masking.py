@@ -79,7 +79,7 @@ class filter:
       cv2.imwrite("masked/"+self.name+"_masked.jpg", self.img_res)
       data = gpsphoto.getGPSData(self.name+'.jpg')
       for tag in data.keys():
-         print "%s: %s" % (tag, data[tag])
+         print ("%s: %s" % (tag, data[tag]))
       info = gpsphoto.GPSInfo((data['Latitude'],data['Longitude']),alt=data['Altitude'])
       photo = gpsphoto.GPSPhoto("masked/"+self.name+"_masked.jpg")
       photo.modGPSData(info, "masked/"+self.name+"_masked.jpg")
