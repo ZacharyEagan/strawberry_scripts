@@ -1,3 +1,4 @@
+import os
 import sys
 import cv2
 import numpy as np
@@ -56,7 +57,7 @@ class filter:
    def new_img(self, name):
       self.img = cv2.imread(name)
       self.name = name.replace('.JPG','')
-      self.name = self.name.replace('.JPG','')
+      self.name = self.name.replace('.jpg','')
       self.name = self.name.replace('.png','')
       self.img_hsv = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)
       self.update_mask()
@@ -85,8 +86,19 @@ class filter:
          return True 
 
    def save(self):
-      cv2.imwrite(self.name+"_mask.png", self.mask)
-      cv2.imwrite(self.name+"_masked.png", self.img_res)
+      try:
+         os.mkdir('masked')
+      except:
+         pass
+      try:
+         os.mkdir('mask')
+      except:
+         pass
+      name = self.name[self.name.rfind('/'):]
+      out_name = 'mask' + name + '_mask.png'
+      cv2.imwrite(out_name, self.mask)
+      out_name = 'masked' + name + '_masked.png'
+      cv2.imwrite(out_name, self.img_res)
       
    def shutdown(self):
       cv2.waitKey(1)
@@ -95,21 +107,38 @@ class filter:
       cv2.waitKey(1)
       cv2.waitKey(1)
       cv2.waitKey(1)
-      
+         
+
+def file_manager(path):
+   files = [path + '/' + x for x in os.listdir(path)]
+   
+   fi = None
+   for file in files:
+      if 'start' in file and ('.jpg' in file or '.png' in file or '.JPG' in file):
+         fi = filter(file)
+         break
+   assert(fi)
+   
+   while not fi.show(False):
+      pass
+   
+   for file in files:
+      if ('.jpg' in file or '.png' in file or '.JPG' in file):
+         print(file)
+         fi.new_img(file)
+         fi.show(True)
+   fi.shutdown()
+
 """
-   usage: move script into working image directory, make sub-directory called "mask" and "masked".
-      ls *.JPG | python image_masking.py
+   usage: python color_masking.py <path to images>
+      Ensure there is at least one image in the file with a name resembling 'start'
       then use the sliders on the "image" window to filter the first image. when satisfied press 's' then press 'q'. program will use the same settings to mask all images in the directory. masked versions of the image (with gps data still attatched if available in the origional) will be placed in masked/ the mask images will be placed into mask. use these with agisoft.      
 """
               
 if __name__=='__main__':
-   f = filter("start.JPG")  
-   while not f.show(False):
-      pass
-   for line in sys.stdin:
-      print(line.strip())
-      f.new_img(line.strip())
-      f.show(True)
-   f.shutdown()
+   if len(sys.argv) > 1:
+      file_manager(sys.argv[1])
+   else:
+      print('Usage: python color_masking.py <path>')
 
 
