@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import os
 import sys
 
 
@@ -104,7 +104,9 @@ def merge(top, bot):
    out = top_masked + bot_masked
    return out
 
-def runner_cutter(name):
+def runner_cutter(file, name):
+   print(file)
+   print(name)
    img_can = cv2.imread('Canopy_masked/'+name+'_masked.JPG')
    drawing_can, img_can = boundry(img_can)
 
@@ -114,7 +116,7 @@ def runner_cutter(name):
    drawings = cv2.resize(drawing_run + drawing_can, (720,480))
    cut = cuts(drawing_run, drawing_can)
    
-   img = cv2.imread('8_13/'+name+'.JPG')
+   img = cv2.imread(file)
    out_img = merge(drawing_can, img)
    out_img = merge(drawing_run, out_img)
    out_img = merge(cut, out_img)
@@ -134,16 +136,33 @@ def runner_cutter(name):
 
    cv2.waitKey(20)   
    
+def shutdown():
+   cv2.waitKey(1)
+   cv2.destroyAllWindows()
+   cv2.waitKey(1)
+   cv2.waitKey(1)
+   cv2.waitKey(1)
+   cv2.waitKey(1)
 
-
+def file_manager(path):
+   file_names = [x.replace('.JPG','') for x in os.listdir(path)]
+   files = [path + '/' + x for x in os.listdir(path)]
+   
+   for i in range(len(files)):
+      file = files[i]
+      name = file_names[i]
+      if ('.jpg' in file or '.png' in file or '.JPG' in file):
+         #try:
+         runner_cutter(file, name)
+         #except Exception as ex:
+          #  print(file, ex)
+   shutdown()
 
 if __name__=='__main__':
-   for name in sys.stdin:
-      name = name[:name.find('.')]
-      try:
-         runner_cutter(name)
-      except Exception as ex:
-         print(name, ex) 
+   if len(sys.argv) > 1:
+      file_manager(sys.argv[1])
+   else:
+      print('Usage: python runner_cutter.py <path>')
       
 
 
